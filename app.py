@@ -12,13 +12,9 @@ def index():
 def generate_document():
     data = request.json
     document_type = data['documentType']
-    
-    # Use your existing code to generate the document
     custom_prompt = f"Generate LaTeX code for {document_type} document"
     latex_code = Model.user_input(custom_prompt)
     Compilation.generate_pdf(latex_code)
-    
-    # Send the generated PDF
     try:
         return send_file(
             'user_document.pdf',
@@ -33,13 +29,11 @@ def update_document():
     data = request.json
     document_type = data['documentType']
     updates = data['updates']
-    
-    # Generate updated document
+
     custom_prompt = f"Generate LaTeX code for {document_type} document and {updates}"
     latex_code = Model.user_input(custom_prompt)
     Compilation.generate_pdf(latex_code)
-    
-    # Send the updated PDF
+
     try:
         return send_file(
             'user_document.pdf',
