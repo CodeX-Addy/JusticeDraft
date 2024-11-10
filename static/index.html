@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JusticeDraft</title>
+    <style>
+        /* Overall Page Styling */
+        body {
+            font-family: 'Merriweather', 'Georgia', serif;
+            color: #333;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e1e4e8;
+        }
+        h1 {
+            color: #1a237e;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        h3, h4 {
+            color: #2c387e;
+            margin-top: 20px;
+        }
+        .input-section {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        select, .button {
+            font-size: 16px;
+            padding: 10px 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .button {
+            background-color: #1a237e;
+            color: #fff;
+            border: none;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #0d1b5b;
+        }
+        #pdfViewer {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .feedback-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f4f7fb;
+            border-left: 4px solid #1a237e;
+            border-radius: 5px;
+        }
+        #updateSection {
+            margin-top: 15px;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Merriweather', 'Georgia', serif;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            color: #1a237e;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>JusticeDraft: Your Legal Document Automation Partner</h1>
+        <div class="input-section">
+            <p>Select the type of legal document you need:</p>
+            <select id="documentType">
+                <option value="">Select document type</option>
+                <option value="divorce">Divorce Document</option>
+                <option value="hypothecation">Hypothecation Document</option>
+            </select>
+            <br>
+            <button id="generateBtn" class="button">Generate Document</button>
+        </div>
+
+        <div id="loading" class="loading">
+            Generating document... Please wait!
+        </div>
+
+        <div class="preview-section hidden" id="previewSection">
+            <h3>Preview Your Legal Document</h3>
+            <iframe id="pdfViewer"></iframe>
+            <button id="downloadBtn" class="button">Download as PDF</button>
+        </div>
+
+        <div class="feedback-section hidden" id="feedbackSection">
+            <h3>Feedback</h3>
+            <p>Are you satisfied with your generated document?</p>
+            <button id="satisfiedBtn" class="button">Yes</button>
+            <button id="unsatisfiedBtn" class="button">No</button>
+
+            <div id="updateSection" class="hidden">
+                <h4>Request Updates</h4>
+                <textarea id="updateInput" rows="4" placeholder="Please describe the updates you need..."></textarea>
+                <button id="updateBtn" class="button">Update Document</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 JusticeDraft. All rights reserved.</p>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generateBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const satisfiedBtn = document.getElementById('satisfiedBtn');
+            const unsatisfiedBtn = document.getElementById('unsatisfiedBtn');
+            const updateBtn = document.getElementById('updateBtn');
+            const documentType = document.getElementById('documentType');
+            const previewSection = document.getElementById('previewSection');
+            const feedbackSection = document.getElementById('feedbackSection');
+            const updateSection = document.getElementById('updateSection');
+            const loading = document.getElementById('loading');
+            generateBtn.addEventListener('click', async () => {
+                if (!documentType.value) {
+                    alert('Please select a document type');
+                    return;
+                }
+                loading.style.display = 'block';
+                previewSection.classList.add('hidden');
+                feedbackSection.style.display = 'none';
+                try {
+                    const response = await fetch('/generate-document', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            documentType: documentType.value
+                        })
+                    });
+                    if (response.ok) {
+                        const pdfBlob = await response.blob();
+                        const pdfUrl = URL.createObjectURL(pdfBlob);
+                        document.getElementById('pdfViewer').src = pdfUrl;
+                        previewSection.classList.remove('hidden');
+                        feedbackSection.style.display = 'block';
+                    } else {
+                        throw new Error('Failed to generate document');
+                    }
+                } catch (error) {
+                    alert('Error generating document: ' + error.message);
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+            downloadBtn.addEventListener('click', () => {
+                const pdfUrl = document.getElementById('pdfViewer').src;
+                const link = document.createElement('a');
+                link.href = pdfUrl;
+                link.download = `${documentType.value}_document.pdf`;
+                link.click();
+            });
+            satisfiedBtn.addEventListener('click', () => {
+                alert('Thank you! We are happy to help you.');
+                feedbackSection.style.display = 'none';
+            });
+            unsatisfiedBtn.addEventListener('click', () => {
+                updateSection.classList.remove('hidden');
+            });
+            updateBtn.addEventListener('click', async () => {
+                const updateText = document.getElementById('updateInput').value;
+                if (!updateText) {
+                    alert('Please enter your requested updates');
+                    return;
+                }
+                loading.style.display = 'block';
+                try {
+                    const response = await fetch('/update-document', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            documentType: documentType.value,
+                            updates: updateText
+                        })
+                    });
+                    if (response.ok) {
+                        const pdfBlob = await response.blob();
+                        const pdfUrl = URL.createObjectURL(pdfBlob);
+                        document.getElementById('pdfViewer').src = pdfUrl;
+                    } else {
+                        throw new Error('Failed to update document');
+                    }
+                } catch (error) {
+                    alert('Error updating document: ' + error.message);
+                } finally {
+                    loading.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
