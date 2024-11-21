@@ -15,6 +15,7 @@ load_dotenv()
 os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
+## LaTEX compilation process
 class Compilation:
     def __init__(self):
         pass
@@ -42,6 +43,7 @@ class Compilation:
             if os.path.exists(aux_file):
                     os.remove(aux_file)
 
+## User satisfaction
 class Simulations:
     def __init__(self):
         pass
@@ -81,6 +83,7 @@ class Simulations:
                 latex_code = Model.user_input(custom_prompt)
                 Compilation.generate_pdf(latex_code)
 
+## Model
 class Model:
     def __init__(self):
         pass
