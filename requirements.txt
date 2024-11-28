@@ -1,7 +1,8 @@
-google-generativeai
-python-dotenv
-langchain
-PyPDF2
-faiss-cpu
-langchain_google_genai
 flask
+PyPDF2
+langchain
+faiss-cpu
+python-dotenv
+google-generativeai
+langchain_google_genai
+
