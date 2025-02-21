@@ -333,7 +333,6 @@
         chatbotSend.addEventListener('click', async () => {
             const userMessage = chatbotInput.value.trim();
             if (!userMessage) return;
-
             addMessage(userMessage, 'user');
             chatbotInput.value = '';
 
