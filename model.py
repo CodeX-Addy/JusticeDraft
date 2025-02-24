@@ -120,7 +120,6 @@ class Model:
             Give latex code from pdf as it is, as per the input document type. Make sure do not include any other content or formatting. Just give the output same as written code in pdf
             Context:\n {context}?\n
             Question: \n{question}\n
-
             Answer:
         """
 
