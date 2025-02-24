@@ -4,16 +4,13 @@ import google.generativeai as genai
 from flask import Flask, send_file, request, jsonify
 from model import Compilation, Model, Simulations
 
-
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
 
-
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
 
 def get_gemini_response(query):
     model = genai.GenerativeModel('gemini-pro')
