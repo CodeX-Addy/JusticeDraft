@@ -75,7 +75,6 @@ class Simulations:
             if satisfaction.lower() == "yes":
                 print("Thank you! We are happy to help you.")
                 satisfied = True
-
             elif satisfaction.lower() == "no":
                 update_prompt = input(
                     "What do you want to update in the document? ")
