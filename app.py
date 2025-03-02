@@ -12,6 +12,7 @@ def index():
 
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
+## Specifying the context
 def get_gemini_response(query):
     model = genai.GenerativeModel('gemini-pro')
     context = """
@@ -19,7 +20,7 @@ def get_gemini_response(query):
     Focus on providing helpful information about:
     - Legal document types
     - Document generation process
-    - Legal terminology
+    - Legal terminology and jargons
     - General legal guidance
     
     Be professional, concise, and helpful.
