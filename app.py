@@ -12,7 +12,7 @@ def index():
 
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-## Specifying the context
+## Specifying the context for llm
 def get_gemini_response(query):
     model = genai.GenerativeModel('gemini-pro')
     context = """
@@ -87,7 +87,6 @@ def update_document():
         )
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True)
