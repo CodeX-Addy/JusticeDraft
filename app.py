@@ -2,36 +2,65 @@ import io
 import os
 import google.generativeai as genai
 from flask import Flask, send_file, request, jsonify
-from model import Compilation, Model, Simulations
+from model import *
+import os.path
+import getpass
+
+# Set up the API key
+if "GOOGLE_API_KEY" not in os.environ:
+    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
+
+# Configure Google Generative AI with the API key
+genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 app = Flask(__name__)
+
+# Initialize FAISS index if it doesn't exist
+def initialize_faiss_index():
+    if not os.path.exists("faiss_index"):
+        print("Initializing FAISS index...")
+        # Use default document(s) for initial index creation
+        # Adjust the document paths as needed based on your project
+        default_docs = ["Divorce.pdf", "Hypothecation.pdf"]
+        existing_docs = [doc for doc in default_docs if os.path.exists(doc)]
+        
+        if existing_docs:
+            Model.embed_pdf_documents(existing_docs)
+            print(f"FAISS index created with documents: {existing_docs}")
+        else:
+            print("Warning: No default documents found. FAISS index initialization skipped.")
 
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
 
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
-## Specifying the context for llm
+# Simplified response function using direct API
 def get_gemini_response(query):
-    model = genai.GenerativeModel('gemini-pro')
-    context = """
-    You are an AI assistant for JusticeDraft, a legal document generation platform. 
-    Focus on providing helpful information about:
-    - Legal document types
-    - Document generation process
-    - Legal terminology and jargons
-    - General legal guidance
-    
-    Be professional, concise, and helpful.
-    """
-
-    full_prompt = f"{context}\n\nUser Query: {query}"
-
     try:
+        # Create a model instance
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        
+        context = """
+        You are an AI assistant for JusticeDraft, a legal document generation platform. 
+        Focus on providing helpful information about:
+        - Legal document types
+        - Document generation process
+        - Legal terminology and jargons
+        - General legal guidance
+        - FOR ANY OTHER QUESTIONS, REPLY WITH "I CAN'T HELP WITH THAT."
+        Be professional, concise, and helpful.
+        """
+
+        full_prompt = f"{context}\n\nUser Query: {query}"
+        
+        # Generate content with the full prompt
         response = model.generate_content(full_prompt)
+        
+        # Extract text directly
         return response.text
+        
     except Exception as e:
+        print(f"Error in get_gemini_response: {str(e)}")
         return f"An error occurred: {str(e)}"
 
 
@@ -43,7 +72,11 @@ def chatbot_query():
     if not query:
         return jsonify({"response": "Please ask a valid question."})
 
+    # Get response and ensure it's a string
     response = get_gemini_response(query)
+    if not isinstance(response, str):
+        response = str(response)
+        
     return jsonify({"response": response})
 
 
@@ -52,13 +85,17 @@ def generate_document():
     data = request.json
     document_type = data['documentType']
     
+    # Ensure FAISS index exists
+    if not os.path.exists("faiss_index"):
+        initialize_faiss_index()
+    
     ## From existing code
     custom_prompt = f"Generate LaTeX code for {document_type} document"
-    latex_code = Model.user_input(custom_prompt)
-    Compilation.generate_pdf(latex_code)
-    
-    ## Sending the generated PDF
     try:
+        latex_code = Model.user_input(custom_prompt)
+        Compilation.generate_pdf(latex_code)
+        
+        ## Sending the generated PDF
         return send_file(
             'user_document.pdf',
             mimetype='application/pdf',
@@ -73,13 +110,17 @@ def update_document():
     document_type = data['documentType']
     updates = data['updates']
     
-    ## Generating the updated document
-    custom_prompt = f"Generate LaTeX code for {document_type} document and {updates}"
-    latex_code = Model.user_input(custom_prompt)
-    Compilation.generate_pdf(latex_code)
+    # Ensure FAISS index exists
+    if not os.path.exists("faiss_index"):
+        initialize_faiss_index()
     
-    ## Sending the updated PDF
+    ## Generating the updated document
     try:
+        custom_prompt = f"Generate LaTeX code for {document_type} document and {updates}"
+        latex_code = Model.user_input(custom_prompt)
+        Compilation.generate_pdf(latex_code)
+        
+        ## Sending the updated PDF
         return send_file(
             'user_document.pdf',
             mimetype='application/pdf',
@@ -89,4 +130,6 @@ def update_document():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    # Initialize FAISS index at startup
+    initialize_faiss_index()
     app.run(debug=True)

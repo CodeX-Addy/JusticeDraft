@@ -12,8 +12,17 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 load_dotenv()
-os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+if "GOOGLE_API_KEY" not in os.environ:
+    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
+
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash",
+    temperature=0,
+    max_tokens=None,
+    timeout=None,
+    max_retries=2
+)
 
 ## LaTEX compilation process
 class Compilation:
@@ -122,8 +131,7 @@ class Model:
             Answer:
         """
 
-        model = ChatGoogleGenerativeAI(model="gemini-pro",
-                                       temperature=0.3)
+        model = llm
         prompt = PromptTemplate(template=prompt_template,
                                 input_variables=["context", "question"])
         chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
