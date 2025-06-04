@@ -6,21 +6,17 @@ from model import *
 import os.path
 import getpass
 
-# Set up the API key
+## Set up the API key
 if "GOOGLE_API_KEY" not in os.environ:
     os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
 
-# Configure Google Generative AI with the API key
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 app = Flask(__name__)
 
-# Initialize FAISS index if it doesn't exist
 def initialize_faiss_index():
     if not os.path.exists("faiss_index"):
         print("Initializing FAISS index...")
-        # Use default document(s) for initial index creation
-        # Adjust the document paths as needed based on your project
         default_docs = ["Divorce.pdf", "Hypothecation.pdf"]
         existing_docs = [doc for doc in default_docs if os.path.exists(doc)]
         
@@ -34,10 +30,8 @@ def initialize_faiss_index():
 def index():
     return app.send_static_file('index.html')
 
-# Simplified response function using direct API
 def get_gemini_response(query):
     try:
-        # Create a model instance
         model = genai.GenerativeModel('gemini-2.0-flash')
         
         context = """
@@ -53,10 +47,8 @@ def get_gemini_response(query):
 
         full_prompt = f"{context}\n\nUser Query: {query}"
         
-        # Generate content with the full prompt
         response = model.generate_content(full_prompt)
         
-        # Extract text directly
         return response.text
         
     except Exception as e:
@@ -72,20 +64,17 @@ def chatbot_query():
     if not query:
         return jsonify({"response": "Please ask a valid question."})
 
-    # Get response and ensure it's a string
     response = get_gemini_response(query)
     if not isinstance(response, str):
         response = str(response)
         
     return jsonify({"response": response})
 
-
 @app.route('/generate-document', methods=['POST'])
 def generate_document():
     data = request.json
     document_type = data['documentType']
     
-    # Ensure FAISS index exists
     if not os.path.exists("faiss_index"):
         initialize_faiss_index()
     
@@ -130,6 +119,5 @@ def update_document():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Initialize FAISS index at startup
     initialize_faiss_index()
     app.run(debug=True)
