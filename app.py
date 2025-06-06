@@ -55,7 +55,6 @@ def get_gemini_response(query):
         print(f"Error in get_gemini_response: {str(e)}")
         return f"An error occurred: {str(e)}"
 
-
 @app.route('/chatbot-query', methods=['POST'])
 def chatbot_query():
     data = request.json
