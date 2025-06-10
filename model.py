@@ -155,8 +155,7 @@ class Model:
 
 def main():
     question = input("Which document do you want to generate: ")
-    ##print("Generating initially with random user's input")
     Simulations.user_satisfaction(question)
-
+    
 if __name__ == "__main__":
     main()
