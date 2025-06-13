@@ -44,10 +44,8 @@ def get_gemini_response(query):
         Be professional, concise, and helpful.
         """
 
-        full_prompt = f"{context}\n\nUser Query: {query}"
-        
-        response = model.generate_content(full_prompt)
-        
+        full_prompt = f"{context}\n\nUser Query: {query}"   
+        response = model.generate_content(full_prompt)  
         return response.text
         
     except Exception as e:
@@ -76,7 +74,6 @@ def generate_document():
     if not os.path.exists("faiss_index"):
         initialize_faiss_index()
     
-    ## From existing code
     custom_prompt = f"Generate LaTeX code for {document_type} document"
     try:
         latex_code = Model.user_input(custom_prompt)
@@ -97,7 +94,6 @@ def update_document():
     document_type = data['documentType']
     updates = data['updates']
     
-    # Ensure FAISS index exists
     if not os.path.exists("faiss_index"):
         initialize_faiss_index()
     
