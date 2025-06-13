@@ -52,7 +52,7 @@ class Compilation:
             if os.path.exists(aux_file):
                     os.remove(aux_file)
 
-## User satisfaction
+## User satisfaction simulations
 class Simulations:
     def __init__(self):
         pass
