@@ -7,7 +7,7 @@ import os.path
 import getpass
 
 if "GOOGLE_API_KEY" not in os.environ:
-    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
+    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your API key: ")
 
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
@@ -23,7 +23,7 @@ def initialize_faiss_index():
             Model.embed_pdf_documents(existing_docs)
             print(f"FAISS index created with documents: {existing_docs}")
         else:
-            print("Warning: No default documents found. FAISS index initialization skipped.")
+            print("Warning: No default documents found. FAISS index initialization skipped.....")
 
 @app.route('/')
 def index():
@@ -79,12 +79,12 @@ def generate_document():
         latex_code = Model.user_input(custom_prompt)
         Compilation.generate_pdf(latex_code)
         
-        ## Sending the generated PDF
         return send_file(
             'user_document.pdf',
             mimetype='application/pdf',
             as_attachment=False
         )
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
