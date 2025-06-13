@@ -84,7 +84,7 @@ def generate_document():
             mimetype='application/pdf',
             as_attachment=False
         )
-        
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -97,18 +97,17 @@ def update_document():
     if not os.path.exists("faiss_index"):
         initialize_faiss_index()
     
-    ## Generating the updated document
     try:
-        custom_prompt = f"Generate LaTeX code for {document_type} document and {updates}"
+        custom_prompt = f"Generate LaTeX code for this {document_type} document and {updates}"
         latex_code = Model.user_input(custom_prompt)
         Compilation.generate_pdf(latex_code)
         
-        ## Sending the updated PDF
         return send_file(
             'user_document.pdf',
             mimetype='application/pdf',
             as_attachment=False
         )
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
