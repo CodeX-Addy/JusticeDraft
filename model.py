@@ -14,7 +14,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 load_dotenv()
 
 if "GOOGLE_API_KEY" not in os.environ:
-    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Google AI API key: ")
+    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your API key: ")
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.0-flash",
