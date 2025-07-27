@@ -98,7 +98,7 @@ def update_document():
         initialize_faiss_index()
     
     try:
-        custom_prompt = f"Generate LaTeX code for this {document_type} document and {updates}"
+        custom_prompt = f"Generate LaTeX code for this {document_type} document and following {updates}"
         latex_code = Model.user_input(custom_prompt)
         Compilation.generate_pdf(latex_code)
         
