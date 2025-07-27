@@ -40,7 +40,7 @@ def get_gemini_response(query):
         - Document generation process
         - Legal terminologies and jargons
         - General legal guidance
-        - FOR ANY OTHER QUESTIONS, REPLY WITH "I CAN'T HELP WITH THAT."
+        - FOR ANY OTHER QUERIES, REPLY WITH "I CAN'T HELP YOU WITH THAT."
         Be professional, concise, and helpful.
         """
 
