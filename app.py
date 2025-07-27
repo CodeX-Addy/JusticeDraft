@@ -7,7 +7,7 @@ import os.path
 import getpass
 
 if "GOOGLE_API_KEY" not in os.environ:
-    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your API key: ")
+    os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter your Gemini LLM's API key: ")
 
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
@@ -34,11 +34,11 @@ def get_gemini_response(query):
         model = genai.GenerativeModel('gemini-2.0-flash')
         
         context = """
-        You are an AI assistant for JusticeDraft, a legal document generation platform. 
+        You are an AI assistant for JusticeDraft, a legal document drafting platform. 
         Focus on providing helpful information about:
-        - Legal document types
+        - Legal documents types
         - Document generation process
-        - Legal terminology and jargons
+        - Legal terminologies and jargons
         - General legal guidance
         - FOR ANY OTHER QUESTIONS, REPLY WITH "I CAN'T HELP WITH THAT."
         Be professional, concise, and helpful.
